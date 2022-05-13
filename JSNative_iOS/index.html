@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+</head>
+<body>
+
+<button id="btn0" onclick="clickCallNative0('参数')">调用原生方传参数</button>
+<button id="btn1" onclick="clickCallNative1()">调用原生方法不传参数</button>
+<div id="content"></div>
+
+</body>
+
+<script type="text/javascript">
+    //调用原生 带参数
+        function clickCallNative0(str) {
+            str = String(str);
+            var u = navigator.userAgent;
+            var isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+            var isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+            if (isAndroid) {
+                //callNative是原生安卓的方法
+                window.android.nativeMethod(str);
+            } else if (isiOS) {
+                //callNative是原生iOS可以拿到的方法名
+                window.webkit.messageHandlers.nativeMethod.postMessage({'str': str});
+            }
+        }
+	
+	// 调用原生不带参数
+	function clickCallNative1() {
+        
+        let u = navigator.userAgent;
+        let isAndroid = u.indexOf('Android') > -1 || u.indexOf('Linux') > -1; //android终端或者uc浏览器
+        let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/); //ios终端
+	    if (isAndroid) {
+	        window.android.nativeMethod();
+	    } else if (isiOS) {
+            //这边postMessage需要传一个空字符串或者空对象，否则iOS的代理方法不走
+	        window.webkit.messageHandlers.nativeMethod.postMessage('');
+	    }
+	}
+
+    //原生调用js方法
+    let content = document.getElementById("content");
+	function nativeCalljs0(){
+		content.innerHTML = "调用了没有参的js函数";
+        return 'nativeCalljs0 方法被调用了';
+	};
+	function nativeCalljs1(des){
+		content.innerHTML = "js的带参方法被调用了，参数是："+des;
+        return 'nativeCalljs1 方法被调用了';
+	};
+</script>
+<style>
+	button{
+		width: 400px;
+		height: 150px;
+        font-size: 50px;
+	}
+	#content{
+        margin-top: 50px;
+		font-size: 50px
+	}
+</style>
+</html>
